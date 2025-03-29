@@ -1,9 +1,9 @@
 import express from "express";
-import { logger } from "./utils/logger";
-import "./middleware/timestamp-logging";
-import { PatientRepository } from "./domain/patients/patient-repository";
-import { initializeDatabase } from "./config/database";
-import apiRoutes from "./routes";
+import { logger } from "~/utils/logger";
+import "~/middleware/timestamp-logging";
+import { PatientRepository } from "~/domain/patients/patient-repository";
+import { initializeDatabase } from "~/config/database";
+import apiRoutes from "~/routes";
 
 const app = express();
 const port: number = 3448;

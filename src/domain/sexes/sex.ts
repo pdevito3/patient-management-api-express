@@ -1,4 +1,4 @@
-import { ValueObject } from '../value-object';
+import { ValueObject } from '~/domain/value-object';
 
 export class Sex extends ValueObject {
   private _sex: SexEnum = SexEnum.NotGiven;

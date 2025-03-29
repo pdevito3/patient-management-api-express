@@ -1,8 +1,8 @@
-import { Patient } from './patient';
-import { PatientForCreation, PatientForUpdate } from './models';
-import { Sex } from '../sexes/sex';
-import { Lifespan } from '../lifespans/lifespan';
-import { db } from '../../config/database';
+import { Patient } from '~/domain/patients/patient';
+import { PatientForCreation, PatientForUpdate } from '~/domain/patients/models';
+import { Sex } from '~/domain/sexes/sex';
+import { Lifespan } from '~/domain/lifespans/lifespan';
+import { db } from '~/config/database';
 
 export class PatientRepository {
   public async getAll(): Promise<Patient[]> {

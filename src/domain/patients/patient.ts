@@ -1,7 +1,7 @@
-import { BaseEntity } from '../base-entity';
-import { PatientForCreation, PatientForUpdate } from './models';
-import { Sex } from '../sexes/sex';
-import { Lifespan } from '../lifespans/lifespan';
+import { BaseEntity } from '~/domain/base-entity';
+import { PatientForCreation, PatientForUpdate } from '~/domain/patients/models';
+import { Sex } from '~/domain/sexes/sex';
+import { Lifespan } from '~/domain/lifespans/lifespan';
 
 /**
  * Patient entity that represents a patient in the system

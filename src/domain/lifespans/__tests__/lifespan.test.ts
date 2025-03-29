@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { faker } from '@faker-js/faker';
 import { Lifespan } from '../lifespan';
-import { ValidationException } from '../../exceptions';
+import { ValidationException } from '../../../exceptions';
 
 describe('Lifespan', () => {
   let fakerInstance: typeof faker;

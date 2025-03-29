@@ -1,7 +1,7 @@
-import express, { NextFunction, Request, Response } from "express";
+import express, { Request, Response } from "express";
 import { Application } from "express-serve-static-core";
 import pinoHttp from "pino-http";
-import { logger } from "../utils/logger";
+import { logger } from "~/utils/logger";
 
 
 declare module "express-serve-static-core" {

@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import { logger } from "../../../utils/logger";
-import { PatientRepository } from "../patient-repository";
-import { PatientForCreationDto } from "../dtos";
-import { PatientForCreation } from "../models";
+import { logger } from "~/utils/logger";
+import { PatientRepository } from "~/domain/patients/patient-repository";
+import { PatientForCreationDto } from "~/domain/patients/dtos";
+import { PatientForCreation } from "~/domain/patients/models";
 
 export const createPatient = async (req: Request, res: Response): Promise<void> => {
   try {

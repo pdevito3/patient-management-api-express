@@ -4,8 +4,8 @@
   "description": "Patient Management API Server",
   "main": "dist/server.js",
   "scripts": {
-    "start": "node dist/server.js",
-    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "start": "node -r tsconfig-paths/register dist/server.js",
+    "dev": "ts-node-dev --respawn --transpile-only -r tsconfig-paths/register src/server.ts",
     "build": "tsc",
     "watch-ts": "tsc -w",
     "test": "vitest run",
@@ -28,6 +28,7 @@
     "@types/node": "^20.17.19",
     "@vitest/ui": "^3.0.9",
     "ts-node-dev": "^2.0.0",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.7.3",
     "vitest": "^3.0.9"
   }

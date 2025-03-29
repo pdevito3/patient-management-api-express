@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { logger } from "../../../utils/logger";
-import { PatientRepository } from "../patient-repository";
+import { logger } from "~/utils/logger";
+import { PatientRepository } from "~/domain/patients/patient-repository";
 
 export const deletePatient = async (req: Request, res: Response): Promise<void> => {
   try {
