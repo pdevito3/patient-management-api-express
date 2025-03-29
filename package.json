@@ -7,7 +7,11 @@
     "start": "node dist/server.js",
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
-    "watch-ts": "tsc -w"
+    "watch-ts": "tsc -w",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "better-sqlite3": "^11.9.1",
@@ -19,9 +23,12 @@
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {
+    "@faker-js/faker": "^9.6.0",
     "@types/express": "^4.17.21",
     "@types/node": "^20.17.19",
+    "@vitest/ui": "^3.0.9",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^5.7.3"
+    "typescript": "^5.7.3",
+    "vitest": "^3.0.9"
   }
 }
