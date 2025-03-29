@@ -1,6 +1,7 @@
 import { BaseEntity } from '../base-entity';
 import { PatientForCreation, PatientForUpdate } from './models';
-import { Sex } from './sex';
+import { Sex } from '../sexes/sex';
+import { Lifespan } from '../lifespans/lifespan';
 
 /**
  * Patient entity that represents a patient in the system
@@ -9,6 +10,7 @@ export class Patient extends BaseEntity {
   private _firstName: string = '';
   private _lastName: string = '';
   private _sex: Sex = Sex.NotGiven();
+  private _lifespan: Lifespan = new Lifespan();
 
   public get firstName(): string {
     return this._firstName;
@@ -31,6 +33,13 @@ export class Patient extends BaseEntity {
     this._sex = value;
   }
 
+  public get lifespan(): Lifespan {
+    return this._lifespan;
+  }
+  private set lifespan(value: Lifespan) {
+    this._lifespan = value;
+  }
+
   /**
    * Creates a new patient from the provided data
    * @param patientForCreation The data to create the patient from
@@ -42,6 +51,7 @@ export class Patient extends BaseEntity {
     newPatient.firstName = patientForCreation.firstName;
     newPatient.lastName = patientForCreation.lastName;
     newPatient.sex = new Sex(patientForCreation.sex);
+    newPatient.lifespan = new Lifespan(patientForCreation.knownAge, patientForCreation.dateOfBirth);
     
     return newPatient;
   }
@@ -55,6 +65,7 @@ export class Patient extends BaseEntity {
     this.firstName = patientForUpdate.firstName;
     this.lastName = patientForUpdate.lastName;
     this.sex = new Sex(patientForUpdate.sex);
+    this.lifespan = new Lifespan(patientForUpdate.knownAge, patientForUpdate.dateOfBirth);
     
     return this;
   }

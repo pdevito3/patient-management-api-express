@@ -4,13 +4,21 @@ import "./middleware/timestamp-logging";
 import { PatientRepository } from "./domain/patients/patient-repository";
 import { PatientForCreationDto, PatientForUpdateDto } from "./domain/patients/dtos";
 import { PatientForCreation, PatientForUpdate } from "./domain/patients/models";
+import { initializeDatabase } from "./config/database";
 
 const app = express();
 const port: number = 3448;
 const patientRepository = new PatientRepository();
 
-// Seed initial data
-patientRepository.seed();
+(async () => {
+  try {
+    await initializeDatabase();
+    await patientRepository.seed();
+    logger.info("Database initialized and seeded successfully");
+  } catch (error) {
+    logger.error({ error }, "Failed to initialize database");
+  }
+})();
 
 app.useHttpLoggingMiddleware();
 
@@ -21,50 +29,69 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
-// Get all patients
-app.get("/api/patients", (req, res) => {
-  logger.info("Fetching all patients");
-  const patients = patientRepository.getAll();
-  
-  res.json({
-    success: true,
-    data: patients.map(patient => ({
-      id: patient.id,
-      firstName: patient.firstName,
-      lastName: patient.lastName,
-      sex: patient.sex.Value
-    }))
-  });
-});
-
-// Get patient by ID
-app.get("/api/patients/:id", (req, res) => {
-  const patientId = req.params.id;
-  logger.info({ patientId }, "Fetching patient by ID");
-  
-  const patient = patientRepository.getById(patientId);
-  
-  if (patient) {
+app.get("/api/patients", async (req, res) => {
+  try {
+    logger.info("Fetching all patients");
+    const patients = await patientRepository.getAll();
+    
     res.json({
       success: true,
-      data: {
+      data: patients.map(patient => ({
         id: patient.id,
         firstName: patient.firstName,
         lastName: patient.lastName,
-        sex: patient.sex.Value
-      }
+        sex: patient.sex.Value,
+        age: patient.lifespan.age,
+        dateOfBirth: patient.lifespan.dateOfBirth,
+        lifeStage: patient.lifespan.getLifeStage()
+      }))
     });
-  } else {
-    logger.warn({ patientId }, "Patient not found");
-    res.status(404).json({
+  } catch (error) {
+    logger.error({ error }, "Error fetching patients");
+    res.status(500).json({
       success: false,
-      error: "Patient not found"
+      error: "Failed to fetch patients"
     });
   }
 });
 
-// Create a new patient
-app.post("/api/patients", (req, res) => {
+app.get("/api/patients/:id", async (req, res) => {
+  try {
+    const patientId = req.params.id;
+    logger.info({ patientId }, "Fetching patient by ID");
+    
+    const patient = await patientRepository.getById(patientId);
+    
+    if (patient) {
+      res.json({
+        success: true,
+        data: {
+          id: patient.id,
+          firstName: patient.firstName,
+          lastName: patient.lastName,
+          sex: patient.sex.Value,
+          age: patient.lifespan.age,
+          dateOfBirth: patient.lifespan.dateOfBirth,
+          lifeStage: patient.lifespan.getLifeStage()
+        }
+      });
+    } else {
+      logger.warn({ patientId }, "Patient not found");
+      res.status(404).json({
+        success: false,
+        error: "Patient not found"
+      });
+    }
+  } catch (error) {
+    logger.error({ error, patientId: req.params.id }, "Error fetching patient");
+    res.status(500).json({
+      success: false,
+      error: "Failed to fetch patient"
+    });
+  }
+});
+
+app.post("/api/patients", async (req, res) => {
   try {
     const patientDto: PatientForCreationDto = req.body;
     logger.info({ patient: patientDto }, "Creating new patient");
@@ -72,10 +99,12 @@ app.post("/api/patients", (req, res) => {
     const patientForCreation: PatientForCreation = {
       firstName: patientDto.firstName,
       lastName: patientDto.lastName,
-      sex: patientDto.sex
+      sex: patientDto.sex,
+      knownAge: patientDto.knownAge,
+      dateOfBirth: patientDto.dateOfBirth
     };
     
-    const newPatient = patientRepository.create(patientForCreation);
+    const newPatient = await patientRepository.create(patientForCreation);
     
     res.status(201).json({
       success: true,
@@ -83,7 +112,10 @@ app.post("/api/patients", (req, res) => {
         id: newPatient.id,
         firstName: newPatient.firstName,
         lastName: newPatient.lastName,
-        sex: newPatient.sex.Value
+        sex: newPatient.sex.Value,
+        age: newPatient.lifespan.age,
+        dateOfBirth: newPatient.lifespan.dateOfBirth,
+        lifeStage: newPatient.lifespan.getLifeStage()
       }
     });
   } catch (error) {
@@ -95,8 +127,7 @@ app.post("/api/patients", (req, res) => {
   }
 });
 
-// Update an existing patient
-app.put("/api/patients/:id", (req, res) => {
+app.put("/api/patients/:id", async (req, res) => {
   try {
     const patientId = req.params.id;
     const patientDto: PatientForUpdateDto = req.body;
@@ -105,10 +136,12 @@ app.put("/api/patients/:id", (req, res) => {
     const patientForUpdate: PatientForUpdate = {
       firstName: patientDto.firstName,
       lastName: patientDto.lastName,
-      sex: patientDto.sex
+      sex: patientDto.sex,
+      knownAge: patientDto.knownAge,
+      dateOfBirth: patientDto.dateOfBirth
     };
     
-    const updatedPatient = patientRepository.update(patientId, patientForUpdate);
+    const updatedPatient = await patientRepository.update(patientId, patientForUpdate);
     
     if (updatedPatient) {
       res.json({
@@ -117,7 +150,10 @@ app.put("/api/patients/:id", (req, res) => {
           id: updatedPatient.id,
           firstName: updatedPatient.firstName,
           lastName: updatedPatient.lastName,
-          sex: updatedPatient.sex.Value
+          sex: updatedPatient.sex.Value,
+          age: updatedPatient.lifespan.age,
+          dateOfBirth: updatedPatient.lifespan.dateOfBirth,
+          lifeStage: updatedPatient.lifespan.getLifeStage()
         }
       });
     } else {
@@ -136,20 +172,27 @@ app.put("/api/patients/:id", (req, res) => {
   }
 });
 
-// Delete a patient
-app.delete("/api/patients/:id", (req, res) => {
-  const patientId = req.params.id;
-  logger.info({ patientId }, "Deleting patient");
-  
-  const deleted = patientRepository.delete(patientId);
-  
-  if (deleted) {
-    res.status(204).send();
-  } else {
-    logger.warn({ patientId }, "Patient not found for deletion");
-    res.status(404).json({
+app.delete("/api/patients/:id", async (req, res) => {
+  try {
+    const patientId = req.params.id;
+    logger.info({ patientId }, "Deleting patient");
+    
+    const deleted = await patientRepository.delete(patientId);
+    
+    if (deleted) {
+      res.status(204).send();
+    } else {
+      logger.warn({ patientId }, "Patient not found for deletion");
+      res.status(404).json({
+        success: false,
+        error: "Patient not found"
+      });
+    }
+  } catch (error) {
+    logger.error({ error, patientId: req.params.id }, "Error deleting patient");
+    res.status(500).json({
       success: false,
-      error: "Patient not found"
+      error: "Failed to delete patient"
     });
   }
 });
@@ -163,5 +206,5 @@ app.get("/api/error", (req, res) => {
 });
 
 app.listen(port, () => {
-  logger.info(`Patient Management API listening on port ${port}`);
+  logger.info(`Server is running on port ${port}`);
 });
