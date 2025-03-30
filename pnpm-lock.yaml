@@ -14,6 +14,9 @@ importers:
       express:
         specifier: ^4.21.2
         version: 4.21.2
+      express-async-errors:
+        specifier: ^3.1.1
+        version: 3.1.1(express@4.21.2)
       knex:
         specifier: ^3.1.0
         version: 3.1.0(better-sqlite3@11.9.1)(sqlite3@5.1.7)
@@ -745,6 +748,11 @@ packages:
   expect-type@1.2.0:
     resolution: {integrity: sha512-80F22aiJ3GLyVnS/B3HzgR6RelZVumzj9jkL0Rhz4h0xYbNW9PjlQz5h3J/SShErbXBc295vseR4/MIbVmUbeA==}
     engines: {node: '>=12.0.0'}
+
+  express-async-errors@3.1.1:
+    resolution: {integrity: sha512-h6aK1da4tpqWSbyCa3FxB/V6Ehd4EEB15zyQq9qe75OZBp0krinNKuH4rAY+S/U/2I36vdLAUFSjQJ+TFmODng==}
+    peerDependencies:
+      express: ^4.16.2
 
   express@4.21.2:
     resolution: {integrity: sha512-28HqgMZAmih1Czt9ny7qr6ek2qddF4FclbMzwhCREB6OFfH+rXAnuNCwo1/wFvrtbgsQDb4kSbX9de9lFbrXnA==}
@@ -2292,6 +2300,10 @@ snapshots:
   expand-template@2.0.3: {}
 
   expect-type@1.2.0: {}
+
+  express-async-errors@3.1.1(express@4.21.2):
+    dependencies:
+      express: 4.21.2
 
   express@4.21.2:
     dependencies:

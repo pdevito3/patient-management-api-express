@@ -1,6 +1,8 @@
-import express from "express";
+import express, { Request, Response, NextFunction } from "express";
+import "express-async-errors";
 import { logger } from "~/utils/logger";
 import "~/middleware/timestamp-logging";
+import "~/middleware/problem-details/problem-details-middleware";
 import { PatientRepository } from "~/domain/patients/patient-repository";
 import { initializeDatabase } from "~/config/database";
 import apiRoutes from "~/routes";
@@ -23,16 +25,18 @@ app.useHttpLoggingMiddleware();
 
 app.use(express.json());
 
-app.get("/", (req, res) => {
+app.get("/", (req: Request, res: Response) => {
   logger.info("Processing root request");
   res.send("Hello World!");
 });
 
 app.use("/api", apiRoutes);
+app.get("/api/error", (req: Request, res: Response, next: NextFunction) => {
+  next(new Error("This is an example error"));
+});
 
-app.get("/api/error", (req, res) => {
-  logger.error("This is an example error");
-  res.status(500).json({ message: "Internal server error" });
+app.useProblemDetailsMiddleware({
+  includeExceptionDetails: process.env.NODE_ENV !== 'production'
 });
 
 app.listen(port, () => {
